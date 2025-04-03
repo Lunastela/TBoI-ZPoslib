@@ -12,4 +12,22 @@ function zposUtility:GetTimeScale()
     return timeScaleTable[Game():GetRoom():GetBrokenWatchState() + 1]
 end
 
+function zposUtility.evaluateCallbacks(callbackType, evaluateAll, ...)
+    local result = nil
+    local callbackList = Isaac.GetCallbacks(callbackType)
+    if callbackList and (#callbackList > 0) then
+        for _, callback in ipairs(callbackList) do
+            local temporaryResult = callback.Function(callback.Mod, ...)
+            if (not result) or temporaryResult then
+                result = temporaryResult
+            end
+            if ((not evaluateAll) 
+            and (result ~= nil)) then
+                return result
+            end
+        end
+    end
+    return result
+end
+
 return zposUtility

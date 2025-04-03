@@ -4,7 +4,7 @@ local vFac = ZPOS_LIBRARY.VectorFactory
 
 -- Definitions
 local DEFAULT_GRAVITY = 0.5
-local DEFAULT_AIR_DRAG = 0 -- 0.125
+local DEFAULT_AIR_DRAG = 0 --0.125
 local DEFAULT_AIR_MOVEMENT_FACTOR = 0.25
 
 ---Returns an npc's instantiated data

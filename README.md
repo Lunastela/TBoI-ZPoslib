@@ -31,7 +31,7 @@ Conversely, here are a few situations where ZPoslib might not be for you:
 - You do not care about momentum or "accurate" 3D movement.
 - You are an inexperienced modder, or just want to get something done quickly.
 
-# How to Use:
+# How to use:
 
 ## Installation:
 Place the library's files into their own folder, ideally within a library or dependency folder.

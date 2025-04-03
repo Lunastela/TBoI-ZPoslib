@@ -27,20 +27,30 @@ if (not ZPOS_LIBRARY or (ZPOS_LIBRARY.VersionNumber < CURRENT_VERSION)) or DEBUG
 
     local zposData = include(rootFolder .. ".zpos_table")
     local zposUtility = include(rootFolder .. ".zpos_utility")
+    local zposCallbacks = include(rootFolder .. ".zpos_callbacks")
 
     -- Register Callbacks
     function ZPOS_LIBRARY:applyRenderOffset(npc, vectorOffset)
         -- Instantiate NPC data
         local npcData = zposData:GenerateData(npc)
-        if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
-            local worldToScreenConversion = Isaac.ScreenToWorldDistance(Vector.One)
-            npcData.Gravity = 0.35 * worldToScreenConversion.Y
-            npcData.Velocity.Z = 6.5 * worldToScreenConversion.Y
-            -- npcData.Position.X = npcData.Position.X - 20
-        end
 
         -- Fetch timescale multiplier for the room
         local timeScale = zposUtility:GetTimeScale()
+
+        -- Pre Velocity Apply Callback
+        local cancelZUpdate = zposUtility.evaluateCallbacks(zposCallbacks.ZPOS_PRE_APPLY_VELOCITY, true, npc, npcData)
+
+        -- If the previous callbacks haven't cancelled Z position updates
+        if not cancelZUpdate then
+            -- Only apply velocity to Z position as the game handles the application otherwise
+            npcData.Position.Z = npcData.Position.Z + (npcData.Velocity.Z * timeScale)
+
+            -- Apply gravity to velocity
+            npcData.Velocity.Z = npcData.Velocity.Z - (npcData.Gravity * timeScale)
+        end
+
+        -- Post Velocity Apply 
+        zposUtility.evaluateCallbacks(zposCallbacks.ZPOS_POST_APPLY_VELOCITY, false, npc, npcData)
 
         -- If a previous position is found
         if npcData.PreviousPosition then
@@ -60,13 +70,23 @@ if (not ZPOS_LIBRARY or (ZPOS_LIBRARY.VersionNumber < CURRENT_VERSION)) or DEBUG
             -- Conversely, adjust the actual velocity of the player to match the 3D velocity
             npc.Velocity = npc.Velocity + (npcData.Velocity:To2D() - npc.Velocity)
         end
-        
-        -- Only apply velocity to Z position as the game handles the application otherwise
-        npcData.Position.Z = npcData.Position.Z + (npcData.Velocity.Z * timeScale)
 
-        -- Apply gravity to velocity
-        npcData.Velocity.Z = npcData.Velocity.Z - (npcData.Gravity * timeScale)
+        npcData.PreviousVelocity = Vector(npc.Velocity.X, npc.Velocity.Y)
+        npcData.PreviousPosition = Vector(npc.Position.X, npc.Position.Y)
+        return (npc.Position - npcData.Position:Flatten())
+    end
+    ZPOS_LIBRARY:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_RENDER, CallbackPriority.LATE, ZPOS_LIBRARY.applyRenderOffset)
+    ZPOS_LIBRARY:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_RENDER, CallbackPriority.LATE, ZPOS_LIBRARY.applyRenderOffset)
 
+    ZPOS_LIBRARY:AddCallback(zposCallbacks.ZPOS_PRE_APPLY_VELOCITY, function(_, npc, npcData)
+        if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
+            local worldToScreenConversion = Isaac.ScreenToWorldDistance(Vector.One)
+            npcData.Gravity = 0.35 * worldToScreenConversion.Y
+            npcData.Velocity.Z = 6.5 * worldToScreenConversion.Y
+        end
+    end)
+
+    ZPOS_LIBRARY:AddCallback(zposCallbacks.ZPOS_PRE_APPLY_VELOCITY, function(_, npc, npcData)
         if zposUtility:HasLanded(npcData) then
             npcData.Position.Z = 0
             npcData.Velocity.Z = 0
@@ -79,15 +99,10 @@ if (not ZPOS_LIBRARY or (ZPOS_LIBRARY.VersionNumber < CURRENT_VERSION)) or DEBUG
                     local rotationDegrees = (player:GetMovementVector():GetAngleDegrees() - airVector:GetAngleDegrees())
                     airVector = airVector - (airVector * npcData.AirMovement) + (airVector:Rotated(rotationDegrees) * npcData.AirMovement)
                 end
-                npc.Velocity = npc.Velocity + airVector
+                -- npc.Velocity = npc.Velocity + airVector
                 npcData.Velocity = npcData.Velocity + vFac.From2D(airVector)
             end
         end
-        npcData.PreviousVelocity = Vector(npc.Velocity.X, npc.Velocity.Y)
-        npcData.PreviousPosition = Vector(npc.Position.X, npc.Position.Y)
-        return calculatedVisualOffset
-    end
-    ZPOS_LIBRARY:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_RENDER, CallbackPriority.LATE, ZPOS_LIBRARY.applyRenderOffset)
-    ZPOS_LIBRARY:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_RENDER, CallbackPriority.LATE, ZPOS_LIBRARY.applyRenderOffset)
+    end)
 end
 return ZPOS_LIBRARY
