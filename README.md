@@ -1,7 +1,7 @@
 # ZPoslib for The Binding of Isaac: Repentance(+)
 
 ZPoslib, or ZPosition Library, is a more robust and complex alternative to 3D positions in The Binding of Isaac.
-It features the use of 3D Vectors for 3D position and velocity calculations, and currently only works with REPENTOGON.
+It features the use of 3D Vectors for 3D position and velocity calculations, and **currently only works with REPENTOGON.**
 
 ZPoslib was created as an alternative to [JumpLib](https://github.com/drpandacat/JumpLib) and [Revelations' proprietary AirMovement library](https://github.com/filloax/revelations-mirror/tree/main/scripts/revelations/common/library/airmovement). It is not a fork or directly based on either of these libraries.
 
