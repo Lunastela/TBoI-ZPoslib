@@ -12,6 +12,9 @@
         @lunastela
 --]]
 
+-- The name of the Root file
+local rootFolder = "scripts.lib.zposlib"
+
 local CURRENT_VERSION = 0.1
 local DEBUG_REBUILD = true
 if (not ZPOS_LIBRARY or (ZPOS_LIBRARY.VersionNumber < CURRENT_VERSION)) or DEBUG_REBUILD then
@@ -19,11 +22,11 @@ if (not ZPOS_LIBRARY or (ZPOS_LIBRARY.VersionNumber < CURRENT_VERSION)) or DEBUG
     ZPOS_LIBRARY.VersionNumber = CURRENT_VERSION
     print("Initializing ZPosLib Version", ZPOS_LIBRARY.VersionNumber)
 
-    ZPOS_LIBRARY.VectorFactory = include("scripts.lib.zposlib.zpos_vector3d")
+    ZPOS_LIBRARY.VectorFactory = include(rootFolder .. ".zpos_vector3d")
     local vFac = ZPOS_LIBRARY.VectorFactory
 
-    local zposData = include("scripts.lib.zposlib.zpos_table")
-    local zposUtility = include("scripts.lib.zposlib.zpos_utility")
+    local zposData = include(rootFolder .. ".zpos_table")
+    local zposUtility = include(rootFolder .. ".zpos_utility")
 
     -- Register Callbacks
     function ZPOS_LIBRARY:applyRenderOffset(npc, vectorOffset)
