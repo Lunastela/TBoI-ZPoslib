@@ -1,4 +1,5 @@
 local zposData = {}
+zposData.Data = {}
 
 local vFac = ZPOS_LIBRARY.VectorFactory
 
@@ -11,10 +12,11 @@ local DEFAULT_AIR_MOVEMENT_FACTOR = 0.25
 ---@return table npcData
 function zposData:GenerateData(npc)
     local ptrHash = GetPtrHash(npc)
-    if not zposData[ptrHash] then
+    if not zposData.Data[ptrHash] then
         -- Instantiate the Entity table
-        zposData[ptrHash] = {}
-        local npcData = zposData[ptrHash]
+        zposData.Data[ptrHash] = {}
+        local npcData = zposData.Data[ptrHash]
+        npcData.Pointer = EntityPtr(npc)
         -- Define Position Data
         if not npcData.Position then
             npcData.Position = vFac.Vector3D(
@@ -31,7 +33,17 @@ function zposData:GenerateData(npc)
         npcData.AirDrag = DEFAULT_AIR_DRAG
         npcData.AirMovement = DEFAULT_AIR_MOVEMENT_FACTOR
     end
-    return zposData[ptrHash]
+    return zposData.Data[ptrHash]
 end
+
+-- Clear entities in the table that do not have references
+ZPOS_LIBRARY:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function(_)
+    for ptrHash, npcData in pairs(zposData.Data) do
+        local entityPointer = (npcData and npcData.Pointer)
+        if not (entityPointer and entityPointer.Ref) then
+            zposData.Data[ptrHash] = nil
+        end
+    end
+end)    
 
 return zposData

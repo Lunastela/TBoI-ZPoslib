@@ -59,9 +59,6 @@ if (not ZPOS_LIBRARY or (ZPOS_LIBRARY.VersionNumber < CURRENT_VERSION)) or DEBUG
             -- Conversely adjust the actual position of the player to match the 3D position
             npc.Position = npc.Position + (npcData.Position:To2D() - npc.Position)
         end
-
-        -- Calculate visual offset for total position
-        local calculatedVisualOffset = (npc.Position - npcData.Position:Flatten())
         
         -- If a previous velocity is found
         if npcData.PreviousVelocity then
@@ -73,6 +70,8 @@ if (not ZPOS_LIBRARY or (ZPOS_LIBRARY.VersionNumber < CURRENT_VERSION)) or DEBUG
 
         npcData.PreviousVelocity = Vector(npc.Velocity.X, npc.Velocity.Y)
         npcData.PreviousPosition = Vector(npc.Position.X, npc.Position.Y)
+
+        -- Calculate and Display the visual offset of the player
         return (npc.Position - npcData.Position:Flatten())
     end
     ZPOS_LIBRARY:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_RENDER, CallbackPriority.LATE, ZPOS_LIBRARY.applyRenderOffset)
@@ -86,10 +85,11 @@ if (not ZPOS_LIBRARY or (ZPOS_LIBRARY.VersionNumber < CURRENT_VERSION)) or DEBUG
         end
     end)
 
-    ZPOS_LIBRARY:AddCallback(zposCallbacks.ZPOS_PRE_APPLY_VELOCITY, function(_, npc, npcData)
+    ZPOS_LIBRARY:AddCallback(zposCallbacks.ZPOS_POST_APPLY_VELOCITY, function(_, npc, npcData)
         if zposUtility:HasLanded(npcData) then
             npcData.Position.Z = 0
             npcData.Velocity.Z = 0
+            return true
         else
             -- Air Velocity
             if npcData.PreviousVelocity then
