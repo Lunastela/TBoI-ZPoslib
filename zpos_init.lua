@@ -64,10 +64,12 @@ if (not ZPOS_LIBRARY or (ZPOS_LIBRARY.VersionNumber < CURRENT_VERSION)) or DEBUG
         if npcData.PreviousVelocity then
             -- Adjust the set 3D velocity to the player's current velocity
             npcData.Velocity = npcData.Velocity + vFac.From2D(npc.Velocity - npcData.PreviousVelocity)
+
             -- Conversely, adjust the actual velocity of the player to match the 3D velocity
             npc.Velocity = npc.Velocity + (npcData.Velocity:To2D() - npc.Velocity)
         end
 
+        -- Update the previous position and velocity for next frame
         npcData.PreviousVelocity = Vector(npc.Velocity.X, npc.Velocity.Y)
         npcData.PreviousPosition = Vector(npc.Position.X, npc.Position.Y)
 
@@ -76,6 +78,7 @@ if (not ZPOS_LIBRARY or (ZPOS_LIBRARY.VersionNumber < CURRENT_VERSION)) or DEBUG
     end
     ZPOS_LIBRARY:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_RENDER, CallbackPriority.LATE, ZPOS_LIBRARY.applyRenderOffset)
     ZPOS_LIBRARY:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_RENDER, CallbackPriority.LATE, ZPOS_LIBRARY.applyRenderOffset)
+    ZPOS_LIBRARY:AddPriorityCallback(ModCallbacks.MC_PRE_PICKUP_RENDER, CallbackPriority.LATE, ZPOS_LIBRARY.applyRenderOffset)
 
     ZPOS_LIBRARY:AddCallback(zposCallbacks.ZPOS_PRE_APPLY_VELOCITY, function(_, npc, npcData)
         if Input.IsButtonTriggered(Keyboard.KEY_H, 0) then
@@ -89,7 +92,6 @@ if (not ZPOS_LIBRARY or (ZPOS_LIBRARY.VersionNumber < CURRENT_VERSION)) or DEBUG
         if zposUtility:HasLanded(npcData) then
             npcData.Position.Z = 0
             npcData.Velocity.Z = 0
-            return true
         else
             -- Air Velocity
             if npcData.PreviousVelocity then
