@@ -29,9 +29,13 @@ function zposData:GenerateData(npc)
                 npc.Velocity.X, npc.Velocity.Y, 0
             )
         end
+        
+        npcData.OnGround = true
         npcData.Gravity = DEFAULT_GRAVITY
         npcData.AirDrag = DEFAULT_AIR_DRAG
         npcData.AirMovement = DEFAULT_AIR_MOVEMENT_FACTOR
+
+        npcData.OriginalGridCollision = npc.GridCollisionClass
     end
     return zposData.Data[ptrHash]
 end
@@ -44,6 +48,6 @@ ZPOS_LIBRARY:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function(_)
             zposData.Data[ptrHash] = nil
         end
     end
-end)    
+end)
 
 return zposData

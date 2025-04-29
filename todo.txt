@@ -1,0 +1,2 @@
+- TearHeight not causing collisions with player
+- TearHeight causing layering issues with Spawner Entities
