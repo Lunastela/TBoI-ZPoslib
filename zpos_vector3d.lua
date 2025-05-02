@@ -126,5 +126,6 @@ end
 -- Rawset Vector Zero and One
 rawset(Vector3D, "Zero", Vector3D.Vector3D(0, 0, 0))
 rawset(Vector3D, "One", Vector3D.Vector3D(1, 1, 1))
+rawset(Vector3D, "One2D", Vector3D.Vector3D(1, 1, 0))
 
 return Vector3D

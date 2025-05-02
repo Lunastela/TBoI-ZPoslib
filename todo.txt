@@ -1,2 +1,6 @@
-- TearHeight not causing collisions with player
-- TearHeight causing layering issues with Spawner Entities
+ZPosLib Thought Gathering
+
+To fix the collision type problems maybe introduce a flag that changes the kind of collision types that are provided?
+Always try to set the collision type to the type it was set to the last frame if it isn't the one forcibly being changed.
+It's okay to (partly) reimplement grid collisions in some way or form because nobody can actually change how they work unless repentogon adds
+something for that, though they would add a way to check I believe.

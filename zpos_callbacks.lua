@@ -1,3 +1,4 @@
+---@enum ZPosCallback
 return {
     --[[
         ZPOS_PRE_APPLY_VELOCITY:
@@ -15,5 +16,18 @@ return {
         ZPOS_POST_ENTITY_LAND:
         Used to run code whenever an entity has newly landed. 
     --]]
-    ZPOS_POST_ENTITY_LAND = "ZPOSLIB_POST_ENTITY_LAND"
+    ZPOS_POST_ENTITY_LAND = "ZPOSLIB_POST_ENTITY_LAND",
+    --[[
+        ZPOS_GRAVITY_APPLY_MODIFIER:
+        Used to calculate gravity whenever :GetGravity() is used.
+    --]]
+    ZPOS_GRAVITY_APPLY_MODIFIER = "ZPOSLIB_GRAVITY_APPLY_MODIFIER",
+    --[[
+        ZPOS_POST_ENTITY_INIT:
+        Used to be able to manipulate default values
+        after entities are initialized.
+
+        (Entity entity, EntityData entityData, number Gravity): Return a number to modify the gravity.
+    --]]
+    ZPOS_POST_ENTITY_INIT = "ZPOSLIB_POST_ENTITY_INIT"
 }
